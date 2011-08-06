@@ -1,0 +1,1 @@
+cat primes.min | parser

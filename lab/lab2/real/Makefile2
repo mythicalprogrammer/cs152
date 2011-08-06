@@ -1,0 +1,33 @@
+# Makefile
+
+OBJS	= bison.o lex.o main.o
+
+CC	= g++
+CFLAGS	= -g -Wall -ansi -pedantic
+
+calc:		$(OBJS)
+		$(CC) $(CFLAGS) $(OBJS) -o calc -lfl
+
+lex.o:		lex.c
+		$(CC) $(CFLAGS) -c lex.c -o lex.o
+
+lex.c:		project2.lex 
+		flex project2.lex
+		cp lex.yy.c lex.c
+
+bison.o:	bison.c
+		$(CC) $(CFLAGS) -c bison.c -o bison.o
+
+bison.c:	project2.y
+		bison -d -v project2.y
+		cp project2.tab.c bison.c
+		cmp -s project2.tab.h tok.h || cp project2.tab.h tok.h
+
+main.o:		main.cc
+		$(CC) $(CFLAGS) -c main.cc -o main.o
+
+lex.o yac.o main.o	: heading.h
+lex.o main.o		: tok.h
+
+clean:
+	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h project2.tab.c project2.tab.h project2.output project2

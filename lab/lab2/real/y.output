@@ -1,0 +1,1328 @@
+Grammar
+
+    0 $accept: Program $end
+
+    1 @1: /* empty */
+
+    2 @2: /* empty */
+
+    3 Program: PROGRAM IDENT @1 SEMICOLON @2 Block END_PROGRAM
+
+    4 @3: /* empty */
+
+    5 Block: BlockDeclarationLoop BEGIN_PROGRAM @3 BlockStatmentLoop
+
+    6 @4: /* empty */
+
+    7 BlockDeclarationLoop: Declaration SEMICOLON @4 BlockDeclarationLoop
+    8                     | Declaration SEMICOLON
+
+    9 @5: /* empty */
+
+   10 BlockStatmentLoop: Statement SEMICOLON @5 BlockStatmentLoop
+   11                  | Statement SEMICOLON
+
+   12 Declaration: IDENT declaration2 COLON INTEGER
+   13            | IDENT declaration2 COLON ARRAY L_PAREN number R_PAREN OF INTEGER
+
+   14 @6: /* empty */
+
+   15 declaration2: COMMA IDENT @6 declaration2
+   16             | /* empty */
+
+   17 varloop: Var
+   18        | Var COMMA varloop
+
+   19 Statement: Var ASSIGN Expression
+   20          | IF Bool_Exp THEN BlockStatmentLoop ENDIF
+   21          | IF Bool_Exp THEN BlockStatmentLoop ELSE BlockStatmentLoop ENDIF
+
+   22 @7: /* empty */
+
+   23 @8: /* empty */
+
+   24 Statement: WHILE @7 Bool_Exp @8 LOOP BlockStatmentLoop ENDLOOP
+   25          | READ varloop
+   26          | WRITE varloop
+
+   27 Bool_Exp: Relation_Exp Bool_ExpLoop
+   28         | Relation_Exp
+
+   29 Bool_ExpLoop: AND Relation_Exp Bool_ExpLoop
+   30             | AND Relation_Exp
+   31             | OR Relation_Exp Bool_ExpLoop
+   32             | OR Relation_Exp
+
+   33 Relation_Exp: Expression Comp Expression
+   34             | TRUE
+   35             | FALSE
+   36             | NOT Expression Comp Expression
+   37             | NOT TRUE
+   38             | NOT FALSE
+
+   39 Comp: EQ
+   40     | NEQ
+   41     | LT
+   42     | GT
+   43     | LTE
+   44     | GTE
+
+   45 Expression: SUB Term ExpressionLoop
+   46           | Term ExpressionLoop
+
+   47 ExpressionLoop: ADD Term ExpressionLoop
+   48               | SUB Term ExpressionLoop
+   49               | /* empty */
+
+   50 Term: Factor
+   51     | Factor TermLoop
+
+   52 TermLoop: MULT Factor TermLoop
+   53         | MULT Factor
+   54         | DIV Factor TermLoop
+   55         | DIV Factor
+
+   56 Factor: Var
+   57       | number
+   58       | L_PAREN Expression R_PAREN
+
+   59 number: NUMBER
+
+   60 Var: IDENT
+   61    | IDENT L_PAREN Expression R_PAREN
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+PROGRAM (258) 3
+BEGIN_PROGRAM (259) 5
+END_PROGRAM (260) 3
+OF (261) 13
+IF (262) 20 21
+THEN (263) 20 21
+ENDIF (264) 20 21
+ELSE (265) 21
+WHILE (266) 24
+LOOP (267) 24
+ENDLOOP (268) 24
+READ (269) 25
+WRITE (270) 26
+AND (271) 29 30
+OR (272) 31 32
+NOT (273) 36 37 38
+TRUE (274) 34 37
+FALSE (275) 35 38
+ADD (276) 47
+SUB (277) 45 48
+MULT (278) 52 53
+DIV (279) 54 55
+EQ (280) 39
+NEQ (281) 40
+LT (282) 41
+GT (283) 42
+LTE (284) 43
+GTE (285) 44
+SEMICOLON (286) 3 7 8 10 11
+COLON (287) 12 13
+COMMA (288) 15 18
+L_PAREN (289) 13 58 61
+R_PAREN (290) 13 58 61
+ASSIGN (291) 19
+NUMBER (292) 59
+IDENT (293) 3 12 13 15 60 61
+INTEGER (294) 12 13
+ARRAY (295) 13
+
+
+Nonterminals, with rules where they appear
+
+$accept (41)
+    on left: 0
+Program (42)
+    on left: 3, on right: 0
+@1 (43)
+    on left: 1, on right: 3
+@2 (44)
+    on left: 2, on right: 3
+Block (45)
+    on left: 5, on right: 3
+@3 (46)
+    on left: 4, on right: 5
+BlockDeclarationLoop (47)
+    on left: 7 8, on right: 5 7
+@4 (48)
+    on left: 6, on right: 7
+BlockStatmentLoop (49)
+    on left: 10 11, on right: 5 10 20 21 24
+@5 (50)
+    on left: 9, on right: 10
+Declaration (51)
+    on left: 12 13, on right: 7 8
+declaration2 (52)
+    on left: 15 16, on right: 12 13 15
+@6 (53)
+    on left: 14, on right: 15
+varloop (54)
+    on left: 17 18, on right: 18 25 26
+Statement (55)
+    on left: 19 20 21 24 25 26, on right: 10 11
+@7 (56)
+    on left: 22, on right: 24
+@8 (57)
+    on left: 23, on right: 24
+Bool_Exp (58)
+    on left: 27 28, on right: 20 21 24
+Bool_ExpLoop (59)
+    on left: 29 30 31 32, on right: 27 29 31
+Relation_Exp (60)
+    on left: 33 34 35 36 37 38, on right: 27 28 29 30 31 32
+Comp (61)
+    on left: 39 40 41 42 43 44, on right: 33 36
+Expression (62)
+    on left: 45 46, on right: 19 33 36 58 61
+ExpressionLoop (63)
+    on left: 47 48 49, on right: 45 46 47 48
+Term (64)
+    on left: 50 51, on right: 45 46 47 48
+TermLoop (65)
+    on left: 52 53 54 55, on right: 51 52 54
+Factor (66)
+    on left: 56 57 58, on right: 50 51 52 53 54 55
+number (67)
+    on left: 59, on right: 13 57
+Var (68)
+    on left: 60 61, on right: 17 18 19 56
+
+
+state 0
+
+    0 $accept: . Program $end
+
+    PROGRAM  shift, and go to state 1
+
+    Program  go to state 2
+
+
+state 1
+
+    3 Program: PROGRAM . IDENT @1 SEMICOLON @2 Block END_PROGRAM
+
+    IDENT  shift, and go to state 3
+
+
+state 2
+
+    0 $accept: Program . $end
+
+    $end  shift, and go to state 4
+
+
+state 3
+
+    3 Program: PROGRAM IDENT . @1 SEMICOLON @2 Block END_PROGRAM
+
+    $default  reduce using rule 1 (@1)
+
+    @1  go to state 5
+
+
+state 4
+
+    0 $accept: Program $end .
+
+    $default  accept
+
+
+state 5
+
+    3 Program: PROGRAM IDENT @1 . SEMICOLON @2 Block END_PROGRAM
+
+    SEMICOLON  shift, and go to state 6
+
+
+state 6
+
+    3 Program: PROGRAM IDENT @1 SEMICOLON . @2 Block END_PROGRAM
+
+    $default  reduce using rule 2 (@2)
+
+    @2  go to state 7
+
+
+state 7
+
+    3 Program: PROGRAM IDENT @1 SEMICOLON @2 . Block END_PROGRAM
+
+    IDENT  shift, and go to state 8
+
+    Block                 go to state 9
+    BlockDeclarationLoop  go to state 10
+    Declaration           go to state 11
+
+
+state 8
+
+   12 Declaration: IDENT . declaration2 COLON INTEGER
+   13            | IDENT . declaration2 COLON ARRAY L_PAREN number R_PAREN OF INTEGER
+
+    COMMA  shift, and go to state 12
+
+    $default  reduce using rule 16 (declaration2)
+
+    declaration2  go to state 13
+
+
+state 9
+
+    3 Program: PROGRAM IDENT @1 SEMICOLON @2 Block . END_PROGRAM
+
+    END_PROGRAM  shift, and go to state 14
+
+
+state 10
+
+    5 Block: BlockDeclarationLoop . BEGIN_PROGRAM @3 BlockStatmentLoop
+
+    BEGIN_PROGRAM  shift, and go to state 15
+
+
+state 11
+
+    7 BlockDeclarationLoop: Declaration . SEMICOLON @4 BlockDeclarationLoop
+    8                     | Declaration . SEMICOLON
+
+    SEMICOLON  shift, and go to state 16
+
+
+state 12
+
+   15 declaration2: COMMA . IDENT @6 declaration2
+
+    IDENT  shift, and go to state 17
+
+
+state 13
+
+   12 Declaration: IDENT declaration2 . COLON INTEGER
+   13            | IDENT declaration2 . COLON ARRAY L_PAREN number R_PAREN OF INTEGER
+
+    COLON  shift, and go to state 18
+
+
+state 14
+
+    3 Program: PROGRAM IDENT @1 SEMICOLON @2 Block END_PROGRAM .
+
+    $default  reduce using rule 3 (Program)
+
+
+state 15
+
+    5 Block: BlockDeclarationLoop BEGIN_PROGRAM . @3 BlockStatmentLoop
+
+    $default  reduce using rule 4 (@3)
+
+    @3  go to state 19
+
+
+state 16
+
+    7 BlockDeclarationLoop: Declaration SEMICOLON . @4 BlockDeclarationLoop
+    8                     | Declaration SEMICOLON .
+
+    BEGIN_PROGRAM  reduce using rule 8 (BlockDeclarationLoop)
+    $default       reduce using rule 6 (@4)
+
+    @4  go to state 20
+
+
+state 17
+
+   15 declaration2: COMMA IDENT . @6 declaration2
+
+    $default  reduce using rule 14 (@6)
+
+    @6  go to state 21
+
+
+state 18
+
+   12 Declaration: IDENT declaration2 COLON . INTEGER
+   13            | IDENT declaration2 COLON . ARRAY L_PAREN number R_PAREN OF INTEGER
+
+    INTEGER  shift, and go to state 22
+    ARRAY    shift, and go to state 23
+
+
+state 19
+
+    5 Block: BlockDeclarationLoop BEGIN_PROGRAM @3 . BlockStatmentLoop
+
+    IF     shift, and go to state 24
+    WHILE  shift, and go to state 25
+    READ   shift, and go to state 26
+    WRITE  shift, and go to state 27
+    IDENT  shift, and go to state 28
+
+    BlockStatmentLoop  go to state 29
+    Statement          go to state 30
+    Var                go to state 31
+
+
+state 20
+
+    7 BlockDeclarationLoop: Declaration SEMICOLON @4 . BlockDeclarationLoop
+
+    IDENT  shift, and go to state 8
+
+    BlockDeclarationLoop  go to state 32
+    Declaration           go to state 11
+
+
+state 21
+
+   15 declaration2: COMMA IDENT @6 . declaration2
+
+    COMMA  shift, and go to state 12
+
+    $default  reduce using rule 16 (declaration2)
+
+    declaration2  go to state 33
+
+
+state 22
+
+   12 Declaration: IDENT declaration2 COLON INTEGER .
+
+    $default  reduce using rule 12 (Declaration)
+
+
+state 23
+
+   13 Declaration: IDENT declaration2 COLON ARRAY . L_PAREN number R_PAREN OF INTEGER
+
+    L_PAREN  shift, and go to state 34
+
+
+state 24
+
+   20 Statement: IF . Bool_Exp THEN BlockStatmentLoop ENDIF
+   21          | IF . Bool_Exp THEN BlockStatmentLoop ELSE BlockStatmentLoop ENDIF
+
+    NOT      shift, and go to state 35
+    TRUE     shift, and go to state 36
+    FALSE    shift, and go to state 37
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Bool_Exp      go to state 41
+    Relation_Exp  go to state 42
+    Expression    go to state 43
+    Term          go to state 44
+    Factor        go to state 45
+    number        go to state 46
+    Var           go to state 47
+
+
+state 25
+
+   24 Statement: WHILE . @7 Bool_Exp @8 LOOP BlockStatmentLoop ENDLOOP
+
+    $default  reduce using rule 22 (@7)
+
+    @7  go to state 48
+
+
+state 26
+
+   25 Statement: READ . varloop
+
+    IDENT  shift, and go to state 28
+
+    varloop  go to state 49
+    Var      go to state 50
+
+
+state 27
+
+   26 Statement: WRITE . varloop
+
+    IDENT  shift, and go to state 28
+
+    varloop  go to state 51
+    Var      go to state 50
+
+
+state 28
+
+   60 Var: IDENT .
+   61    | IDENT . L_PAREN Expression R_PAREN
+
+    L_PAREN  shift, and go to state 52
+
+    $default  reduce using rule 60 (Var)
+
+
+state 29
+
+    5 Block: BlockDeclarationLoop BEGIN_PROGRAM @3 BlockStatmentLoop .
+
+    $default  reduce using rule 5 (Block)
+
+
+state 30
+
+   10 BlockStatmentLoop: Statement . SEMICOLON @5 BlockStatmentLoop
+   11                  | Statement . SEMICOLON
+
+    SEMICOLON  shift, and go to state 53
+
+
+state 31
+
+   19 Statement: Var . ASSIGN Expression
+
+    ASSIGN  shift, and go to state 54
+
+
+state 32
+
+    7 BlockDeclarationLoop: Declaration SEMICOLON @4 BlockDeclarationLoop .
+
+    $default  reduce using rule 7 (BlockDeclarationLoop)
+
+
+state 33
+
+   15 declaration2: COMMA IDENT @6 declaration2 .
+
+    $default  reduce using rule 15 (declaration2)
+
+
+state 34
+
+   13 Declaration: IDENT declaration2 COLON ARRAY L_PAREN . number R_PAREN OF INTEGER
+
+    NUMBER  shift, and go to state 40
+
+    number  go to state 55
+
+
+state 35
+
+   36 Relation_Exp: NOT . Expression Comp Expression
+   37             | NOT . TRUE
+   38             | NOT . FALSE
+
+    TRUE     shift, and go to state 56
+    FALSE    shift, and go to state 57
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Expression  go to state 58
+    Term        go to state 44
+    Factor      go to state 45
+    number      go to state 46
+    Var         go to state 47
+
+
+state 36
+
+   34 Relation_Exp: TRUE .
+
+    $default  reduce using rule 34 (Relation_Exp)
+
+
+state 37
+
+   35 Relation_Exp: FALSE .
+
+    $default  reduce using rule 35 (Relation_Exp)
+
+
+state 38
+
+   45 Expression: SUB . Term ExpressionLoop
+
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Term    go to state 59
+    Factor  go to state 45
+    number  go to state 46
+    Var     go to state 47
+
+
+state 39
+
+   58 Factor: L_PAREN . Expression R_PAREN
+
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Expression  go to state 60
+    Term        go to state 44
+    Factor      go to state 45
+    number      go to state 46
+    Var         go to state 47
+
+
+state 40
+
+   59 number: NUMBER .
+
+    $default  reduce using rule 59 (number)
+
+
+state 41
+
+   20 Statement: IF Bool_Exp . THEN BlockStatmentLoop ENDIF
+   21          | IF Bool_Exp . THEN BlockStatmentLoop ELSE BlockStatmentLoop ENDIF
+
+    THEN  shift, and go to state 61
+
+
+state 42
+
+   27 Bool_Exp: Relation_Exp . Bool_ExpLoop
+   28         | Relation_Exp .
+
+    AND  shift, and go to state 62
+    OR   shift, and go to state 63
+
+    $default  reduce using rule 28 (Bool_Exp)
+
+    Bool_ExpLoop  go to state 64
+
+
+state 43
+
+   33 Relation_Exp: Expression . Comp Expression
+
+    EQ   shift, and go to state 65
+    NEQ  shift, and go to state 66
+    LT   shift, and go to state 67
+    GT   shift, and go to state 68
+    LTE  shift, and go to state 69
+    GTE  shift, and go to state 70
+
+    Comp  go to state 71
+
+
+state 44
+
+   46 Expression: Term . ExpressionLoop
+
+    ADD  shift, and go to state 72
+    SUB  shift, and go to state 73
+
+    $default  reduce using rule 49 (ExpressionLoop)
+
+    ExpressionLoop  go to state 74
+
+
+state 45
+
+   50 Term: Factor .
+   51     | Factor . TermLoop
+
+    MULT  shift, and go to state 75
+    DIV   shift, and go to state 76
+
+    $default  reduce using rule 50 (Term)
+
+    TermLoop  go to state 77
+
+
+state 46
+
+   57 Factor: number .
+
+    $default  reduce using rule 57 (Factor)
+
+
+state 47
+
+   56 Factor: Var .
+
+    $default  reduce using rule 56 (Factor)
+
+
+state 48
+
+   24 Statement: WHILE @7 . Bool_Exp @8 LOOP BlockStatmentLoop ENDLOOP
+
+    NOT      shift, and go to state 35
+    TRUE     shift, and go to state 36
+    FALSE    shift, and go to state 37
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Bool_Exp      go to state 78
+    Relation_Exp  go to state 42
+    Expression    go to state 43
+    Term          go to state 44
+    Factor        go to state 45
+    number        go to state 46
+    Var           go to state 47
+
+
+state 49
+
+   25 Statement: READ varloop .
+
+    $default  reduce using rule 25 (Statement)
+
+
+state 50
+
+   17 varloop: Var .
+   18        | Var . COMMA varloop
+
+    COMMA  shift, and go to state 79
+
+    $default  reduce using rule 17 (varloop)
+
+
+state 51
+
+   26 Statement: WRITE varloop .
+
+    $default  reduce using rule 26 (Statement)
+
+
+state 52
+
+   61 Var: IDENT L_PAREN . Expression R_PAREN
+
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Expression  go to state 80
+    Term        go to state 44
+    Factor      go to state 45
+    number      go to state 46
+    Var         go to state 47
+
+
+state 53
+
+   10 BlockStatmentLoop: Statement SEMICOLON . @5 BlockStatmentLoop
+   11                  | Statement SEMICOLON .
+
+    END_PROGRAM  reduce using rule 11 (BlockStatmentLoop)
+    ENDIF        reduce using rule 11 (BlockStatmentLoop)
+    ELSE         reduce using rule 11 (BlockStatmentLoop)
+    ENDLOOP      reduce using rule 11 (BlockStatmentLoop)
+    $default     reduce using rule 9 (@5)
+
+    @5  go to state 81
+
+
+state 54
+
+   19 Statement: Var ASSIGN . Expression
+
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Expression  go to state 82
+    Term        go to state 44
+    Factor      go to state 45
+    number      go to state 46
+    Var         go to state 47
+
+
+state 55
+
+   13 Declaration: IDENT declaration2 COLON ARRAY L_PAREN number . R_PAREN OF INTEGER
+
+    R_PAREN  shift, and go to state 83
+
+
+state 56
+
+   37 Relation_Exp: NOT TRUE .
+
+    $default  reduce using rule 37 (Relation_Exp)
+
+
+state 57
+
+   38 Relation_Exp: NOT FALSE .
+
+    $default  reduce using rule 38 (Relation_Exp)
+
+
+state 58
+
+   36 Relation_Exp: NOT Expression . Comp Expression
+
+    EQ   shift, and go to state 65
+    NEQ  shift, and go to state 66
+    LT   shift, and go to state 67
+    GT   shift, and go to state 68
+    LTE  shift, and go to state 69
+    GTE  shift, and go to state 70
+
+    Comp  go to state 84
+
+
+state 59
+
+   45 Expression: SUB Term . ExpressionLoop
+
+    ADD  shift, and go to state 72
+    SUB  shift, and go to state 73
+
+    $default  reduce using rule 49 (ExpressionLoop)
+
+    ExpressionLoop  go to state 85
+
+
+state 60
+
+   58 Factor: L_PAREN Expression . R_PAREN
+
+    R_PAREN  shift, and go to state 86
+
+
+state 61
+
+   20 Statement: IF Bool_Exp THEN . BlockStatmentLoop ENDIF
+   21          | IF Bool_Exp THEN . BlockStatmentLoop ELSE BlockStatmentLoop ENDIF
+
+    IF     shift, and go to state 24
+    WHILE  shift, and go to state 25
+    READ   shift, and go to state 26
+    WRITE  shift, and go to state 27
+    IDENT  shift, and go to state 28
+
+    BlockStatmentLoop  go to state 87
+    Statement          go to state 30
+    Var                go to state 31
+
+
+state 62
+
+   29 Bool_ExpLoop: AND . Relation_Exp Bool_ExpLoop
+   30             | AND . Relation_Exp
+
+    NOT      shift, and go to state 35
+    TRUE     shift, and go to state 36
+    FALSE    shift, and go to state 37
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Relation_Exp  go to state 88
+    Expression    go to state 43
+    Term          go to state 44
+    Factor        go to state 45
+    number        go to state 46
+    Var           go to state 47
+
+
+state 63
+
+   31 Bool_ExpLoop: OR . Relation_Exp Bool_ExpLoop
+   32             | OR . Relation_Exp
+
+    NOT      shift, and go to state 35
+    TRUE     shift, and go to state 36
+    FALSE    shift, and go to state 37
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Relation_Exp  go to state 89
+    Expression    go to state 43
+    Term          go to state 44
+    Factor        go to state 45
+    number        go to state 46
+    Var           go to state 47
+
+
+state 64
+
+   27 Bool_Exp: Relation_Exp Bool_ExpLoop .
+
+    $default  reduce using rule 27 (Bool_Exp)
+
+
+state 65
+
+   39 Comp: EQ .
+
+    $default  reduce using rule 39 (Comp)
+
+
+state 66
+
+   40 Comp: NEQ .
+
+    $default  reduce using rule 40 (Comp)
+
+
+state 67
+
+   41 Comp: LT .
+
+    $default  reduce using rule 41 (Comp)
+
+
+state 68
+
+   42 Comp: GT .
+
+    $default  reduce using rule 42 (Comp)
+
+
+state 69
+
+   43 Comp: LTE .
+
+    $default  reduce using rule 43 (Comp)
+
+
+state 70
+
+   44 Comp: GTE .
+
+    $default  reduce using rule 44 (Comp)
+
+
+state 71
+
+   33 Relation_Exp: Expression Comp . Expression
+
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Expression  go to state 90
+    Term        go to state 44
+    Factor      go to state 45
+    number      go to state 46
+    Var         go to state 47
+
+
+state 72
+
+   47 ExpressionLoop: ADD . Term ExpressionLoop
+
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Term    go to state 91
+    Factor  go to state 45
+    number  go to state 46
+    Var     go to state 47
+
+
+state 73
+
+   48 ExpressionLoop: SUB . Term ExpressionLoop
+
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Term    go to state 92
+    Factor  go to state 45
+    number  go to state 46
+    Var     go to state 47
+
+
+state 74
+
+   46 Expression: Term ExpressionLoop .
+
+    $default  reduce using rule 46 (Expression)
+
+
+state 75
+
+   52 TermLoop: MULT . Factor TermLoop
+   53         | MULT . Factor
+
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Factor  go to state 93
+    number  go to state 46
+    Var     go to state 47
+
+
+state 76
+
+   54 TermLoop: DIV . Factor TermLoop
+   55         | DIV . Factor
+
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Factor  go to state 94
+    number  go to state 46
+    Var     go to state 47
+
+
+state 77
+
+   51 Term: Factor TermLoop .
+
+    $default  reduce using rule 51 (Term)
+
+
+state 78
+
+   24 Statement: WHILE @7 Bool_Exp . @8 LOOP BlockStatmentLoop ENDLOOP
+
+    $default  reduce using rule 23 (@8)
+
+    @8  go to state 95
+
+
+state 79
+
+   18 varloop: Var COMMA . varloop
+
+    IDENT  shift, and go to state 28
+
+    varloop  go to state 96
+    Var      go to state 50
+
+
+state 80
+
+   61 Var: IDENT L_PAREN Expression . R_PAREN
+
+    R_PAREN  shift, and go to state 97
+
+
+state 81
+
+   10 BlockStatmentLoop: Statement SEMICOLON @5 . BlockStatmentLoop
+
+    IF     shift, and go to state 24
+    WHILE  shift, and go to state 25
+    READ   shift, and go to state 26
+    WRITE  shift, and go to state 27
+    IDENT  shift, and go to state 28
+
+    BlockStatmentLoop  go to state 98
+    Statement          go to state 30
+    Var                go to state 31
+
+
+state 82
+
+   19 Statement: Var ASSIGN Expression .
+
+    $default  reduce using rule 19 (Statement)
+
+
+state 83
+
+   13 Declaration: IDENT declaration2 COLON ARRAY L_PAREN number R_PAREN . OF INTEGER
+
+    OF  shift, and go to state 99
+
+
+state 84
+
+   36 Relation_Exp: NOT Expression Comp . Expression
+
+    SUB      shift, and go to state 38
+    L_PAREN  shift, and go to state 39
+    NUMBER   shift, and go to state 40
+    IDENT    shift, and go to state 28
+
+    Expression  go to state 100
+    Term        go to state 44
+    Factor      go to state 45
+    number      go to state 46
+    Var         go to state 47
+
+
+state 85
+
+   45 Expression: SUB Term ExpressionLoop .
+
+    $default  reduce using rule 45 (Expression)
+
+
+state 86
+
+   58 Factor: L_PAREN Expression R_PAREN .
+
+    $default  reduce using rule 58 (Factor)
+
+
+state 87
+
+   20 Statement: IF Bool_Exp THEN BlockStatmentLoop . ENDIF
+   21          | IF Bool_Exp THEN BlockStatmentLoop . ELSE BlockStatmentLoop ENDIF
+
+    ENDIF  shift, and go to state 101
+    ELSE   shift, and go to state 102
+
+
+state 88
+
+   29 Bool_ExpLoop: AND Relation_Exp . Bool_ExpLoop
+   30             | AND Relation_Exp .
+
+    AND  shift, and go to state 62
+    OR   shift, and go to state 63
+
+    $default  reduce using rule 30 (Bool_ExpLoop)
+
+    Bool_ExpLoop  go to state 103
+
+
+state 89
+
+   31 Bool_ExpLoop: OR Relation_Exp . Bool_ExpLoop
+   32             | OR Relation_Exp .
+
+    AND  shift, and go to state 62
+    OR   shift, and go to state 63
+
+    $default  reduce using rule 32 (Bool_ExpLoop)
+
+    Bool_ExpLoop  go to state 104
+
+
+state 90
+
+   33 Relation_Exp: Expression Comp Expression .
+
+    $default  reduce using rule 33 (Relation_Exp)
+
+
+state 91
+
+   47 ExpressionLoop: ADD Term . ExpressionLoop
+
+    ADD  shift, and go to state 72
+    SUB  shift, and go to state 73
+
+    $default  reduce using rule 49 (ExpressionLoop)
+
+    ExpressionLoop  go to state 105
+
+
+state 92
+
+   48 ExpressionLoop: SUB Term . ExpressionLoop
+
+    ADD  shift, and go to state 72
+    SUB  shift, and go to state 73
+
+    $default  reduce using rule 49 (ExpressionLoop)
+
+    ExpressionLoop  go to state 106
+
+
+state 93
+
+   52 TermLoop: MULT Factor . TermLoop
+   53         | MULT Factor .
+
+    MULT  shift, and go to state 75
+    DIV   shift, and go to state 76
+
+    $default  reduce using rule 53 (TermLoop)
+
+    TermLoop  go to state 107
+
+
+state 94
+
+   54 TermLoop: DIV Factor . TermLoop
+   55         | DIV Factor .
+
+    MULT  shift, and go to state 75
+    DIV   shift, and go to state 76
+
+    $default  reduce using rule 55 (TermLoop)
+
+    TermLoop  go to state 108
+
+
+state 95
+
+   24 Statement: WHILE @7 Bool_Exp @8 . LOOP BlockStatmentLoop ENDLOOP
+
+    LOOP  shift, and go to state 109
+
+
+state 96
+
+   18 varloop: Var COMMA varloop .
+
+    $default  reduce using rule 18 (varloop)
+
+
+state 97
+
+   61 Var: IDENT L_PAREN Expression R_PAREN .
+
+    $default  reduce using rule 61 (Var)
+
+
+state 98
+
+   10 BlockStatmentLoop: Statement SEMICOLON @5 BlockStatmentLoop .
+
+    $default  reduce using rule 10 (BlockStatmentLoop)
+
+
+state 99
+
+   13 Declaration: IDENT declaration2 COLON ARRAY L_PAREN number R_PAREN OF . INTEGER
+
+    INTEGER  shift, and go to state 110
+
+
+state 100
+
+   36 Relation_Exp: NOT Expression Comp Expression .
+
+    $default  reduce using rule 36 (Relation_Exp)
+
+
+state 101
+
+   20 Statement: IF Bool_Exp THEN BlockStatmentLoop ENDIF .
+
+    $default  reduce using rule 20 (Statement)
+
+
+state 102
+
+   21 Statement: IF Bool_Exp THEN BlockStatmentLoop ELSE . BlockStatmentLoop ENDIF
+
+    IF     shift, and go to state 24
+    WHILE  shift, and go to state 25
+    READ   shift, and go to state 26
+    WRITE  shift, and go to state 27
+    IDENT  shift, and go to state 28
+
+    BlockStatmentLoop  go to state 111
+    Statement          go to state 30
+    Var                go to state 31
+
+
+state 103
+
+   29 Bool_ExpLoop: AND Relation_Exp Bool_ExpLoop .
+
+    $default  reduce using rule 29 (Bool_ExpLoop)
+
+
+state 104
+
+   31 Bool_ExpLoop: OR Relation_Exp Bool_ExpLoop .
+
+    $default  reduce using rule 31 (Bool_ExpLoop)
+
+
+state 105
+
+   47 ExpressionLoop: ADD Term ExpressionLoop .
+
+    $default  reduce using rule 47 (ExpressionLoop)
+
+
+state 106
+
+   48 ExpressionLoop: SUB Term ExpressionLoop .
+
+    $default  reduce using rule 48 (ExpressionLoop)
+
+
+state 107
+
+   52 TermLoop: MULT Factor TermLoop .
+
+    $default  reduce using rule 52 (TermLoop)
+
+
+state 108
+
+   54 TermLoop: DIV Factor TermLoop .
+
+    $default  reduce using rule 54 (TermLoop)
+
+
+state 109
+
+   24 Statement: WHILE @7 Bool_Exp @8 LOOP . BlockStatmentLoop ENDLOOP
+
+    IF     shift, and go to state 24
+    WHILE  shift, and go to state 25
+    READ   shift, and go to state 26
+    WRITE  shift, and go to state 27
+    IDENT  shift, and go to state 28
+
+    BlockStatmentLoop  go to state 112
+    Statement          go to state 30
+    Var                go to state 31
+
+
+state 110
+
+   13 Declaration: IDENT declaration2 COLON ARRAY L_PAREN number R_PAREN OF INTEGER .
+
+    $default  reduce using rule 13 (Declaration)
+
+
+state 111
+
+   21 Statement: IF Bool_Exp THEN BlockStatmentLoop ELSE BlockStatmentLoop . ENDIF
+
+    ENDIF  shift, and go to state 113
+
+
+state 112
+
+   24 Statement: WHILE @7 Bool_Exp @8 LOOP BlockStatmentLoop . ENDLOOP
+
+    ENDLOOP  shift, and go to state 114
+
+
+state 113
+
+   21 Statement: IF Bool_Exp THEN BlockStatmentLoop ELSE BlockStatmentLoop ENDIF .
+
+    $default  reduce using rule 21 (Statement)
+
+
+state 114
+
+   24 Statement: WHILE @7 Bool_Exp @8 LOOP BlockStatmentLoop ENDLOOP .
+
+    $default  reduce using rule 24 (Statement)

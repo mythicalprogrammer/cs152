@@ -1,0 +1,84 @@
+Program:		PROGRAM  IDENT SEMICOLON Block END_PROGRAM ; 
+
+
+		
+Block:			BlockDeclarationLoop BEGIN_PROGRAM BlockStatmentLoop;
+		
+BlockDeclarationLoop: 	Declaration SEMICOLON  BlockDeclarationLoop
+                     	| Declaration SEMICOLON 
+			;
+
+BlockStatmentLoop:	Statement SEMICOLON  BlockStatmentLoop
+			| Statement SEMICOLON 
+			;
+
+Declaration:		DeclarationIdLoop COLON  INTEGER
+			| DeclarationIdLoop COLON  ARRAY L_PAREN NUMBER R_PAREN OF INTEGER 
+			;	
+
+DeclarationIdLoop:	IDENT COMMA DeclarationIdLoop
+			| IDENT
+			;				
+
+Statement:		Var ASSIGN Expression 
+			| IF Bool_Exp THEN BlockStatmentLoop ENDIF 
+                        | IF Bool_Exp THEN BlockStatmentLoop ELSE BlockStatmentLoop ENDIF 
+			| WHILE Bool_Exp LOOP BlockStatmentLoop ENDLOOP 
+			| READ DeclarationIdLoop
+			| WRITE DeclarationIdLoop
+                        ;
+
+Bool_Exp:		Relation_Exp Bool_ExpLoop
+			| Relation_Exp 
+			;
+
+Bool_ExpLoop:		AND Relation_Exp Bool_ExpLoop 
+			| AND Relation_Exp 
+			| OR Relation_Exp Bool_ExpLoop
+			| OR Relation_Exp
+			;
+
+Relation_Exp:		Expression Comp Expression
+			| TRUE
+			| FALSE
+			| NOT Expression Comp Expression
+			| NOT TRUE
+			| NOT FALSE
+			;
+
+Comp:			EQ 
+			| NEQ 
+			| LT 
+			| GT 
+			| LTE 
+			| GTE
+			;
+
+Expression:		Term 
+			| Term ExpressionLoop
+			;
+
+ExpressionLoop:		ADD Term ExpressionLoop
+			| ADD Term
+			| SUB Term ExpressionLoop
+			| SUB Term
+			;
+
+Term:			Factor 
+			| Factor TermLoop
+			;
+
+TermLoop:		MULT Factor TermLoop
+			| MULT Factor
+			| DIV Factor TermLoop
+			| DIV Factor
+			;		
+
+Factor:			Var
+			| NUMBER
+			| L_PAREN Expression R_PAREN
+			;
+
+Var:			IDENT
+			| IDENT L_PAREN Expression R_PAREN
+			;

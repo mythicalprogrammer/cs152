@@ -1,0 +1,414 @@
+/* 
+ * Description: Parser
+ *
+ * cs152: Project 2
+ * Student: Quoc Anh Doan
+ * ID: 860759993
+ * UN: qdoan
+ */
+
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <vector>
+#include <list>
+#include <string>
+#include <sstream>
+using namespace std;
+
+void yyerror(const char * msg);
+void init_symbolTable();
+void addSymbolTable(string name, int type);
+void AddIdentifierList(string var1);
+void addSymbolTable2(int type);
+extern unsigned int line;
+extern unsigned int currPos;
+extern char* yytext;
+extern char* ID;
+extern int yylex();
+extern FILE * yyin;
+
+vector<string> buffer;
+vector<string> tempBuffer;
+vector<string> l;
+
+
+
+struct symStruct{
+int type;
+string name;
+};
+unsigned int counter = 0;
+
+vector<symStruct> symbolTable;
+ 
+
+
+%}
+
+%union{
+  int	ival;
+  char*	idval;
+}
+
+%error-verbose
+//%start	input 
+%token PROGRAM BEGIN_PROGRAM END_PROGRAM OF IF THEN ENDIF ELSE WHILE LOOP ENDLOOP READ WRITE AND OR NOT TRUE FALSE ADD SUB MULT DIV EQ NEQ LT GT LTE GTE SEMICOLON COLON COMMA L_PAREN R_PAREN ASSIGN
+%token	<ival>	NUMBER 
+%token	<idval>	IDENT
+%token	<idval>	INTEGER
+%token	<idval>	ARRAY
+//%type	<idval>	declaration3
+%type	<idval>	declaration2
+%type <idval> Statement
+%type <idval> varloop
+%type <idval> Bool_Exp
+%type <idval> Bool_ExpLoop
+%type <idval> Var
+%type <idval> ExpressionLoop
+%type <idval> Expression
+%type <idval> Term
+%type <idval> Factor
+%type <idval> TermLoop
+%type <ival> number
+/*
+%type <idval> Relation_Exp
+%type <idval> Comp
+
+
+
+%type <idval> TermLoop
+%type <idval> Factor
+*/
+%left	ADD SUB
+%left	MULT DIV
+
+
+%%
+
+
+Program:		PROGRAM IDENT {addSymbolTable($2,1);} SEMICOLON Block END_PROGRAM;
+
+		
+Block:			BlockDeclarationLoop BEGIN_PROGRAM  { 
+		                                              string temp =  ": START";
+							      buffer.push_back(temp);
+                                                            }
+			BlockStatmentLoop;
+		
+BlockDeclarationLoop: 	Declaration SEMICOLON BlockDeclarationLoop
+                     	| Declaration SEMICOLON
+			;
+
+BlockStatmentLoop:	Statement SEMICOLON BlockStatmentLoop
+			| Statement SEMICOLON
+			;
+
+Declaration:		IDENT declaration2 COLON INTEGER { 	
+							        string temp = $1;								
+
+								l.push_back(temp);
+                                                                string add = ". _";
+			                                        for(int i=0; i < l.size(); ++i)
+		                                                {
+                                                                  temp = add+l[i];
+                                                                  addSymbolTable(temp,0);
+		                                                }
+			                                        l.clear();
+                                      
+
+							  }
+			| IDENT declaration2 COLON ARRAY L_PAREN NUMBER R_PAREN OF INTEGER 			  
+			        {
+				
+				  string temp = $1;
+			          l.push_back(temp);
+
+				  string add = ".[] _";
+				  int addTemp = $6;
+
+				  string add2;
+				  stringstream out;
+				  out << addTemp;
+				  add2 = out.str();
+
+
+			          for(int i=0; i < l.size(); ++i)
+			          {
+                                    temp = add+l[i]+", "+add2;
+                                    addSymbolTable(temp,4);
+			          }
+			          l.clear();				  
+                                }
+		        ;
+					
+
+declaration2:	        COMMA IDENT {   
+
+				       string temp = $2;
+				       l.push_back($2);
+
+                                     } declaration2
+			| {$$=NULL;}/*empty*/
+			;		
+	
+
+varloop:		Var
+			| Var COMMA varloop;
+
+Statement:		Var ASSIGN Expression {
+						cout << "HELLO"<<endl;
+						if($1 != NULL){
+						string add = "_";
+						string t1 = $1;
+						t1 = add+t1;
+						cout << "t1: "<<t1<<endl;
+						}
+						//cout << "t2: "<<$3<<endl;
+						if($3 != NULL)
+						{
+
+						} 
+
+					      }
+			| IF Bool_Exp THEN BlockStatmentLoop ENDIF
+                        | IF Bool_Exp THEN BlockStatmentLoop ELSE BlockStatmentLoop ENDIF
+			| WHILE {/*l_1 = newlabel(); genCode('label', l_1, 0, 0); $<sval>$=l_1; */}Bool_Exp LOOP BlockStatmentLoop ENDLOOP
+			| READ varloop 
+                                      { 
+					string temp2 = $2;
+					string temp = ".< "+temp2; 
+					buffer.push_back(temp);
+				      }
+			| WRITE varloop
+                        ;
+
+Bool_Exp:		Relation_Exp Bool_ExpLoop
+			| Relation_Exp
+			;
+
+Bool_ExpLoop:		AND Relation_Exp Bool_ExpLoop 
+			| AND Relation_Exp
+			| OR Relation_Exp Bool_ExpLoop
+			| OR Relation_Exp
+			;
+
+Relation_Exp:		Expression Comp Expression 
+			| TRUE
+			| FALSE
+			| NOT Expression Comp Expression
+			| NOT TRUE
+			| NOT FALSE
+			;
+
+Comp:			EQ
+			| NEQ
+			| LT
+			| GT
+			| LTE
+			| GTE
+			;
+
+Expression:	          SUB Term ExpressionLoop
+			  {
+
+			  }
+			| Term ExpressionLoop
+			  {
+
+
+
+			      }
+
+			    
+			  }
+; /*HERE HELP*/ /*HERE HELP*/  /*HERE HELP*/
+ /*HERE HELP*/ /*HERE HELP*/ /*HERE HELP*/
+
+ExpressionLoop:		ADD Term ExpressionLoop
+			| SUB Term ExpressionLoop
+			| {$$=NULL;}
+			;
+
+Term:			Factor {$$=$1;}
+			| Factor  TermLoop
+			;
+
+TermLoop:		MULT Factor TermLoop
+			| MULT Factor {$$ = $2;}
+			| DIV Factor TermLoop
+			| DIV Factor {$$ = $2;}
+			;		
+
+Factor:			Var {$$=$1;}
+			| number
+			| L_PAREN Expression R_PAREN
+			;
+
+number:			NUMBER {$$=$1;};
+
+Var:			IDENT {$$=$1;}
+			| IDENT L_PAREN Expression R_PAREN {$$=$1;}
+			;
+
+%%
+
+
+
+
+int main() {
+
+ cout << "HELLO"<<endl;
+init_symbolTable();	
+yyparse();
+for(int i = 21; i < symbolTable.size(); ++i)
+{
+cout << symbolTable[i].name <<endl;
+} 
+
+for(int i = 0; i < buffer.size(); ++i)
+{
+cout << buffer[i]<<endl;
+} 
+
+cout << "HELLO"<<endl;
+///*Debugger Symbol Table
+/*
+for(int i = 0; i < symbolTable.size(); ++i)
+{
+cout << "Name: "<< symbolTable[i].name << " Type: " << symbolTable[i].type <<endl;
+} 
+*/
+
+return 0;
+}
+
+
+void AddIdentifierList(string var1)
+{
+l.push_back(var1);
+buffer.push_back(var1);
+}
+
+
+void yyerror(const char* msg)
+{
+	printf("** Line %d, position %d: %s\n", line, currPos, msg);
+}
+
+void addSymbolTable(string name, int type)
+{
+symStruct temp;
+temp.type = type;
+temp.name = name;
+symbolTable.push_back(temp);
+
+}
+
+void addSymbolTable2(int type)
+{
+string name;
+symStruct temp;
+int i;
+
+for(i=0; i < l.size(); ++i)
+{
+  name = l[i];
+  temp.type = type;
+  temp.name = name;
+  symbolTable.push_back(temp);
+ }
+l.clear();
+}
+
+void init_symbolTable()
+{
+
+//type
+// -2 = reserved
+//  0 = integer
+//  1 = program name
+//  4 = array
+symStruct temp;
+temp.type =-2;
+temp.name = "program";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "beginprogram";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "endprogram";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "integer";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "array";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "of";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "if";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "then";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "endif";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "else";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "while";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "loop";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "endloop";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "read";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "write";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "and";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "or";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "not";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "true";
+symbolTable.push_back(temp);
+
+temp.type =-2;
+temp.name = "false";
+symbolTable.push_back(temp);
+//cout << symbolTable.size()<<endl;
+}
